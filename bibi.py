@@ -84,3 +84,4 @@ print('Listening... Press Ctrl+C to exit')
 detector.start(detected_callback=chat,
                interrupt_check=interrupt_callback,
                sleep_time=0.03)
+
