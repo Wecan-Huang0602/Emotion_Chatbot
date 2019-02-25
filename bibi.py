@@ -6,7 +6,26 @@ from gtts import gTTS
 import pygame
 import Jacky_Chatbot
 
+import realtime_emotion_outline
+import multiprocessing as mp
+from collections import Counter
+
 interrupted = False
+
+txt_file = 'text_model/'
+
+def get_emotion_result(start, end):
+	result = list(emotion_result)[start:end + 1]
+	# print('range: ', start, end)
+	print('range_emotion: ', result)
+	emotion_counts = Counter(result)
+	final_emotion = emotion_counts.most_common(1)
+	# print(final_emotion)
+	print('情緒判斷結果：', final_emotion[0][0])
+
+	global txt_file
+	txt_file = 'text_model/' + (final_emotion[0][0] + '.txt')
+
 
 def playsound():
 	pygame.mixer.init()
@@ -60,17 +79,20 @@ def chat():
 	playsound()
 	detector.terminate()
 	chatbot = Jacky_Chatbot.Jacky_Chatbot()
-	chatbot.setFile('Happy.txt')
 
 	print('請開始說話～～～')
 
+	start = len(emotion_result) - 1
 	say_text = stt()
+	end = len(emotion_result) - 1
+	get_emotion_result(start, end)
 	print('Q: ' + say_text)
 
 	if say_text == '發生錯誤':
 		print('A: 抱歉我沒聽清楚，請再說一次\n')
 		tts('抱歉我沒聽清楚，請再說一次')
 	else:
+		chatbot.setFile(txt_file)
 		response = chatbot.chat_with_chatbot(say_text)
 		print('A: ' + response)
 		tts(response)
@@ -105,3 +127,22 @@ def init():
 	detector.start(detected_callback=chat,
 				   interrupt_check=interrupt_callback,
 				   sleep_time=0.03)
+
+
+
+
+
+
+
+
+manager = mp.Manager()
+emotion_result = manager.list()
+
+bibi_chatbot = mp.Process(target=init)
+predict_emotion = mp.Process(target=realtime_emotion_outline.predict_emotion, args=(emotion_result,))
+
+bibi_chatbot.start()
+predict_emotion.start()
+
+bibi_chatbot.join()
+predict_emotion.join()

@@ -10,7 +10,8 @@ from imutils.face_utils import  FaceAligner
 
 class_list = ['Sad', 'Happy', 'Natural', 'Angry', 'Fear']
 
-
+# 紀錄已經拍了幾張照片
+count = 0
 
 def readImg(file_dir):
     # 要讀的檔案的名稱
@@ -35,7 +36,7 @@ def readImg(file_dir):
     return img_reshape
 
 
-def predict_emotion(i, emotion_result):
+def predict_emotion(emotion_result):
     # 使用電腦的視訊鏡頭
     cap = cv2.VideoCapture(0)
 
@@ -63,8 +64,6 @@ def predict_emotion(i, emotion_result):
     saver = tf.train.Saver()
     saver.restore(sess, tf.train.latest_checkpoint('model'))  # 載入模型參數
 
-    # 紀錄已經拍了幾張照片
-    count = 0
 
     # 以迴圈從影片檔案讀取影格，並顯示出來
     while(cap.isOpened()):
@@ -80,6 +79,7 @@ def predict_emotion(i, emotion_result):
                                       detector_68landmark=detector_68landmark,
                                       fa=fa)
 
+      global count
       count += 1
 
       if img.shape[0] == 0:
@@ -88,9 +88,11 @@ def predict_emotion(i, emotion_result):
         prediction_result = sess.run(tf.arg_max(y_predict, 1))
         confident_value = sess.run(tf.math.reduce_max(tf.nn.softmax(y_predict)))
 
-        # print('Presict: ' + class_list[int(prediction_result[0])])
-        # print('Confidence: ' + str(confident_value))
+        emotion_result.append(class_list[int(prediction_result[0])])
         # print('==========\033[0;32m(%d)\033[0m==========' % count)
+        # print('Presict: ' + class_list[int(prediction_result[0])])
+        # print('Confidence: ' + str(confident_value) + '\n')
+
 
       # 偵測人臉
       face_rects, scores, idx = detector.run(frame, 0)
