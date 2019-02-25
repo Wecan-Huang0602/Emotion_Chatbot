@@ -8,6 +8,23 @@ import Jacky_Chatbot
 
 interrupted = False
 
+def playsound():
+	pygame.mixer.init()
+	# 載入音檔
+	soundWAV = pygame.mixer.Sound("Snowboy_thing/ding.wav")
+	count = 0
+	while True:
+		# 檢查有沒有在播放音檔，如果沒有則開始播放
+		if pygame.mixer.music.get_busy() == False:
+			soundWAV.play()
+
+			if pygame.mixer.music.set_endevent(pygame.USEREVENT) == None:
+				count += 1
+				if count > 1:
+					pygame.mixer.music.stop()
+					break
+
+
 def stt():
 	r = speech_recognition.Recognizer()
 
@@ -40,6 +57,7 @@ def tts(text):
 					break
 
 def chat():
+	playsound()
 	detector.terminate()
 	chatbot = Jacky_Chatbot.Jacky_Chatbot()
 	chatbot.setFile('Happy.txt')
@@ -72,16 +90,18 @@ def interrupt_callback():
     return interrupted
 
 
-model = 'Snowboy_thing/小白.pmdl'
+detector = None
+def init():
+	model = 'Snowboy_thing/小白.pmdl'
 
-# capture SIGINT signal, e.g., Ctrl+C
-signal.signal(signal.SIGINT, signal_handler)
+	# capture SIGINT signal, e.g., Ctrl+C
+	signal.signal(signal.SIGINT, signal_handler)
 
-detector = snowboydecoder.HotwordDetector(model, sensitivity=0.5)
-print('Listening... Press Ctrl+C to exit')
+	global detector
+	detector = snowboydecoder.HotwordDetector(model, sensitivity=0.5)
+	print('Listening... Press Ctrl+C to exit')
 
 
-detector.start(detected_callback=chat,
-               interrupt_check=interrupt_callback,
-               sleep_time=0.03)
-
+	detector.start(detected_callback=chat,
+				   interrupt_check=interrupt_callback,
+				   sleep_time=0.03)
