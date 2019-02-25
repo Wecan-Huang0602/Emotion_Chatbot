@@ -1,4 +1,4 @@
-import snowboydecoder
+import Snowboy_thing.snowboydecoder as snowboydecoder
 import signal
 
 import speech_recognition
@@ -72,7 +72,7 @@ def interrupt_callback():
     return interrupted
 
 
-model = '小白.pmdl'
+model = 'Snowboy_thing/小白.pmdl'
 
 # capture SIGINT signal, e.g., Ctrl+C
 signal.signal(signal.SIGINT, signal_handler)
