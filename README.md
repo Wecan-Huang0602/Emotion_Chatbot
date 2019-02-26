@@ -1,6 +1,6 @@
 # 小白聊天機器人
 
-需要安裝python3和以下的python套件(可透過pip安裝)
+### 需要安裝python3和以下的python套件(可透過pip安裝):
 1. boost 
 2. cmake 
 3. dlib
