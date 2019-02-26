@@ -1,2 +1,2 @@
-*.cpp linguist-language=python
-*.py linguist-language=python
+*.cpp linguist-language=Python
+*.py linguist-language=Python
