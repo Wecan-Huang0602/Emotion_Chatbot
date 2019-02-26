@@ -10,3 +10,4 @@
 7. PyAudio
 8. pygame
 9. tensorflow
+10. SpeechRecognition
